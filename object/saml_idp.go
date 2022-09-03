@@ -28,7 +28,6 @@ import (
 	"time"
 
 	"github.com/RobotsAndPencils/go-saml"
-	"github.com/astaxie/beego"
 	"github.com/beevik/etree"
 	"github.com/golang-jwt/jwt/v4"
 	dsig "github.com/russellhaering/goxmldsig"
@@ -176,16 +175,12 @@ type Attribute struct {
 }
 
 func GetSamlMeta(application *Application, host string) (*IdpEntityDescriptor, error) {
-	//_, originBackend := getOriginFromHost(host)
 	cert := getCertByApplication(application)
 	block, _ := pem.Decode([]byte(cert.Certificate))
 	certificate := base64.StdEncoding.EncodeToString(block.Bytes)
 
-	origin := beego.AppConfig.String("origin")
 	originFrontend, originBackend := getOriginFromHost(host)
-	if origin != "" {
-		originBackend = origin
-	}
+
 	d := IdpEntityDescriptor{
 		XMLName: xml.Name{
 			Local: "md:EntityDescriptor",
