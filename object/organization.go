@@ -43,6 +43,7 @@ type Organization struct {
 	PasswordSalt       string   `xorm:"varchar(100)" json:"passwordSalt" comment:"密码Salt值"`
 	PhonePrefix        string   `xorm:"varchar(10)"  json:"phonePrefix" comment:"手机号前缀"`
 	DefaultAvatar      string   `xorm:"varchar(100)" json:"defaultAvatar" comment:"默认头像"`
+	DefaultApplication string   `xorm:"varchar(100)" json:"defaultApplication"`
 	Tags               []string `xorm:"mediumtext" json:"tags" comment:"标签集合"`
 	MasterPassword     string   `xorm:"varchar(100)" json:"masterPassword" comment:"万能密码"`
 	EnableSoftDeletion bool     `json:"enableSoftDeletion" comment:"软删除"`
