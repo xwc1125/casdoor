@@ -52,6 +52,10 @@ func getOriginFromHost(host string) (string, string) {
 	if strings.HasPrefix(host, "localhost") {
 		protocol = "http://"
 	}
+	insecure, _ := conf.GetConfigBool("insecure")
+	if insecure {
+		protocol = "http://"
+	}
 
 	if host == "localhost:8000" {
 		return fmt.Sprintf("%s%s", protocol, "localhost:7001"), fmt.Sprintf("%s%s", protocol, "localhost:8000")

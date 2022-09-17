@@ -22,32 +22,33 @@ import (
 	"xorm.io/core"
 )
 
+// AccountItem 个人页设置项
 type AccountItem struct {
-	Name       string `json:"name"`
-	Visible    bool   `json:"visible"`
-	ViewRule   string `json:"viewRule"`
-	ModifyRule string `json:"modifyRule"`
+	Name       string `json:"name" comment:"名称"`
+	Visible    bool   `json:"visible" comment:"是否可见"`
+	ViewRule   string `json:"viewRule" comment:"查看规则"`   // Public/Self/Admin
+	ModifyRule string `json:"modifyRule" comment:"修改规则"` // Admin/Self/Immutable
 }
 
+// Organization 组织
 type Organization struct {
-	Owner       string `xorm:"varchar(100) notnull pk" json:"owner"`
-	Name        string `xorm:"varchar(100) notnull pk" json:"name"`
-	CreatedTime string `xorm:"varchar(100)" json:"createdTime"`
+	Owner       string `xorm:"varchar(100) notnull pk" json:"owner" comment:"owner"`
+	Name        string `xorm:"varchar(100) notnull pk" json:"name" comment:"名称"`
+	CreatedTime string `xorm:"varchar(100)" json:"createdTime" comment:"创建时间"`
 
-	DisplayName        string   `xorm:"varchar(100)" json:"displayName"`
-	WebsiteUrl         string   `xorm:"varchar(100)" json:"websiteUrl"`
-	Favicon            string   `xorm:"varchar(100)" json:"favicon"`
-	PasswordType       string   `xorm:"varchar(100)" json:"passwordType"`
-	PasswordSalt       string   `xorm:"varchar(100)" json:"passwordSalt"`
-	PhonePrefix        string   `xorm:"varchar(10)"  json:"phonePrefix"`
-	DefaultAvatar      string   `xorm:"varchar(100)" json:"defaultAvatar"`
-	DefaultApplication string   `xorm:"varchar(100)" json:"defaultApplication"`
-	Tags               []string `xorm:"mediumtext" json:"tags"`
-	MasterPassword     string   `xorm:"varchar(100)" json:"masterPassword"`
-	EnableSoftDeletion bool     `json:"enableSoftDeletion"`
-	IsProfilePublic    bool     `json:"isProfilePublic"`
+	DisplayName        string   `xorm:"varchar(100)" json:"displayName" comment:"显示的名称"`
+	WebsiteUrl         string   `xorm:"varchar(100)" json:"websiteUrl" comment:"网页地址"`
+	Favicon            string   `xorm:"varchar(100)" json:"favicon" comment:"网站图标"`
+	PasswordType       string   `xorm:"varchar(100)" json:"passwordType" comment:"密码类型"`
+	PasswordSalt       string   `xorm:"varchar(100)" json:"passwordSalt" comment:"密码Salt值"`
+	PhonePrefix        string   `xorm:"varchar(10)"  json:"phonePrefix" comment:"手机号前缀"`
+	DefaultAvatar      string   `xorm:"varchar(100)" json:"defaultAvatar" comment:"默认头像"`
+	Tags               []string `xorm:"mediumtext" json:"tags" comment:"标签集合"`
+	MasterPassword     string   `xorm:"varchar(100)" json:"masterPassword" comment:"万能密码"`
+	EnableSoftDeletion bool     `json:"enableSoftDeletion" comment:"软删除"`
+	IsProfilePublic    bool     `json:"isProfilePublic" comment:"是否用户个人页公开"`
 
-	AccountItems []*AccountItem `xorm:"varchar(3000)" json:"accountItems"`
+	AccountItems []*AccountItem `xorm:"varchar(3000)" json:"accountItems" comment:"个人页设置项"`
 }
 
 func GetOrganizationCount(owner, field, value string) int {

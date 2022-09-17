@@ -29,54 +29,55 @@ const (
 	UserPropertiesWechatOpenId  = "wechatOpenId"
 )
 
+// User 用户信息
 type User struct {
-	Owner       string `xorm:"varchar(100) notnull pk" json:"owner"`
-	Name        string `xorm:"varchar(100) notnull pk" json:"name"`
-	CreatedTime string `xorm:"varchar(100)" json:"createdTime"`
-	UpdatedTime string `xorm:"varchar(100)" json:"updatedTime"`
+	Owner       string `xorm:"varchar(100) notnull pk" json:"owner" comment:"组织"`
+	Name        string `xorm:"varchar(100) notnull pk" json:"name" comment:"用户名称"`
+	CreatedTime string `xorm:"varchar(100)" json:"createdTime" comment:"创建时间"`
+	UpdatedTime string `xorm:"varchar(100)" json:"updatedTime" comment:"更新时间"`
 
-	Id                string   `xorm:"varchar(100) index" json:"id"`
-	Type              string   `xorm:"varchar(100)" json:"type"`
-	Password          string   `xorm:"varchar(100)" json:"password"`
-	PasswordSalt      string   `xorm:"varchar(100)" json:"passwordSalt"`
-	DisplayName       string   `xorm:"varchar(100)" json:"displayName"`
-	FirstName         string   `xorm:"varchar(100)" json:"firstName"`
-	LastName          string   `xorm:"varchar(100)" json:"lastName"`
-	Avatar            string   `xorm:"varchar(500)" json:"avatar"`
-	PermanentAvatar   string   `xorm:"varchar(500)" json:"permanentAvatar"`
-	Email             string   `xorm:"varchar(100) index" json:"email"`
-	EmailVerified     bool     `json:"emailVerified"`
-	Phone             string   `xorm:"varchar(100) index" json:"phone"`
-	Location          string   `xorm:"varchar(100)" json:"location"`
-	Address           []string `json:"address"`
-	Affiliation       string   `xorm:"varchar(100)" json:"affiliation"`
-	Title             string   `xorm:"varchar(100)" json:"title"`
-	IdCardType        string   `xorm:"varchar(100)" json:"idCardType"`
-	IdCard            string   `xorm:"varchar(100) index" json:"idCard"`
-	Homepage          string   `xorm:"varchar(100)" json:"homepage"`
-	Bio               string   `xorm:"varchar(100)" json:"bio"`
-	Tag               string   `xorm:"varchar(100)" json:"tag"`
-	Region            string   `xorm:"varchar(100)" json:"region"`
-	Language          string   `xorm:"varchar(100)" json:"language"`
-	Gender            string   `xorm:"varchar(100)" json:"gender"`
-	Birthday          string   `xorm:"varchar(100)" json:"birthday"`
-	Education         string   `xorm:"varchar(100)" json:"education"`
-	Score             int      `json:"score"`
-	Karma             int      `json:"karma"`
-	Ranking           int      `json:"ranking"`
-	IsDefaultAvatar   bool     `json:"isDefaultAvatar"`
-	IsOnline          bool     `json:"isOnline"`
-	IsAdmin           bool     `json:"isAdmin"`
-	IsGlobalAdmin     bool     `json:"isGlobalAdmin"`
-	IsForbidden       bool     `json:"isForbidden"`
-	IsDeleted         bool     `json:"isDeleted"`
-	SignupApplication string   `xorm:"varchar(100)" json:"signupApplication"`
-	Hash              string   `xorm:"varchar(100)" json:"hash"`
-	PreHash           string   `xorm:"varchar(100)" json:"preHash"`
+	Id                string   `xorm:"varchar(100) index" json:"id" comment:"用户ID"`
+	Type              string   `xorm:"varchar(100)" json:"type" comment:"用户类型"` // normal-user
+	Password          string   `xorm:"varchar(100)" json:"password" comment:"密码"`
+	PasswordSalt      string   `xorm:"varchar(100)" json:"passwordSalt" comment:"密码加盐"`
+	DisplayName       string   `xorm:"varchar(100)" json:"displayName" comment:"显示名称"`
+	FirstName         string   `xorm:"varchar(100)" json:"firstName" comment:"名字"`
+	LastName          string   `xorm:"varchar(100)" json:"lastName" comment:"姓"`
+	Avatar            string   `xorm:"varchar(500)" json:"avatar" comment:"头像"`
+	PermanentAvatar   string   `xorm:"varchar(500)" json:"permanentAvatar" comment:"持久头像"`
+	Email             string   `xorm:"varchar(100) index" json:"email" comment:"电子邮箱"`
+	EmailVerified     bool     `json:"emailVerified" comment:"邮箱是否验证"`
+	Phone             string   `xorm:"varchar(100) index" json:"phone" comment:"手机号"`
+	Location          string   `xorm:"varchar(100)" json:"location" comment:"城市"`
+	Address           []string `json:"address" comment:"地址"`
+	Affiliation       string   `xorm:"varchar(100)" json:"affiliation" comment:"工作单位"`
+	Title             string   `xorm:"varchar(100)" json:"title" comment:"职务"`
+	IdCardType        string   `xorm:"varchar(100)" json:"身份类型"`
+	IdCard            string   `xorm:"varchar(100) index" json:"身份证号"`
+	Homepage          string   `xorm:"varchar(100)" json:"个人主页"`
+	Bio               string   `xorm:"varchar(100)" json:"自我介绍"`
+	Tag               string   `xorm:"varchar(100)" json:"标签"`
+	Region            string   `xorm:"varchar(100)" json:"国家/地区"`
+	Language          string   `xorm:"varchar(100)" json:"语言"`
+	Gender            string   `xorm:"varchar(100)" json:"性别"`
+	Birthday          string   `xorm:"varchar(100)" json:"生日"`
+	Education         string   `xorm:"varchar(100)" json:"教育"`
+	Score             int      `json:"score" comment:"分数"`
+	Karma             int      `json:"karma" comment:"Karma"`
+	Ranking           int      `json:"ranking" comment:"排名"`
+	IsDefaultAvatar   bool     `json:"isDefaultAvatar" comment:"是否默认头像"`
+	IsOnline          bool     `json:"isOnline" comment:"是否在线"`
+	IsAdmin           bool     `json:"isAdmin" comment:"是管理员"`
+	IsGlobalAdmin     bool     `json:"isGlobalAdmin" comment:"是全局管理员"`
+	IsForbidden       bool     `json:"isForbidden" comment:"被禁用"`
+	IsDeleted         bool     `json:"isDeleted" comment:"被删除"`
+	SignupApplication string   `xorm:"varchar(100)" json:"signupApplication" comment:"注册应用"`
+	Hash              string   `xorm:"varchar(100)" json:"hash" comment:"Hash"`
+	PreHash           string   `xorm:"varchar(100)" json:"preHash" comment:"PreHash"`
 
-	CreatedIp      string `xorm:"varchar(100)" json:"createdIp"`
-	LastSigninTime string `xorm:"varchar(100)" json:"lastSigninTime"`
-	LastSigninIp   string `xorm:"varchar(100)" json:"lastSigninIp"`
+	CreatedIp      string `xorm:"varchar(100)" json:"createdIp" comment:"创建的IP"`
+	LastSigninTime string `xorm:"varchar(100)" json:"lastSigninTime" comment:"最近登录时间"`
+	LastSigninIp   string `xorm:"varchar(100)" json:"lastSigninIp" comment:"最近登录IP"`
 
 	GitHub   string `xorm:"github varchar(100)" json:"github"`
 	Google   string `xorm:"varchar(100)" json:"google"`
@@ -112,10 +113,10 @@ type User struct {
 	Roles       []*Role       `json:"roles"`
 	Permissions []*Permission `json:"permissions"`
 
-	LastSigninWrongTime string `xorm:"varchar(100)" json:"lastSigninWrongTime"`
-	SigninWrongTimes    int    `json:"signinWrongTimes"`
+	LastSigninWrongTime string `xorm:"varchar(100)" json:"lastSigninWrongTime" comment:"最近登录出错时间"`
+	SigninWrongTimes    int    `json:"signinWrongTimes" comment:"登录出错次数"`
 
-	ManagedAccounts []ManagedAccount `xorm:"managedAccounts blob" json:"managedAccounts"`
+	ManagedAccounts []ManagedAccount `xorm:"managedAccounts blob" json:"managedAccounts" comment:"托管账户"`
 }
 
 type Userinfo struct {

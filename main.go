@@ -48,7 +48,10 @@ func main() {
 	// beego.SetStaticPath("/static", "web/build/static")
 
 	beego.BConfig.WebConfig.DirectoryIndex = true
-	beego.SetStaticPath("/swagger", "swagger")
+	enableSwagger, _ := conf.GetConfigBool("enableSwagger")
+	if enableSwagger {
+		beego.SetStaticPath("/swagger", "swagger")
+	}
 	beego.SetStaticPath("/files", "files")
 	// https://studygolang.com/articles/2303
 	beego.InsertFilter("*", beego.BeforeRouter, routers.StaticFilter)
@@ -76,5 +79,6 @@ func main() {
 	port := beego.AppConfig.DefaultInt("httpport", 8000)
 	// logs.SetLevel(logs.LevelInformational)
 	logs.SetLogFuncCall(false)
+	logs.Info("http server Running on http://%s:%d", "localhost", port)
 	beego.Run(fmt.Sprintf(":%v", port))
 }
