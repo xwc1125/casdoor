@@ -1,4 +1,4 @@
-// Copyright 2021 The Casdoor Authors. All Rights Reserved.
+// Copyright 2022 The Casdoor Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,39 +17,46 @@ import {Link} from "react-router-dom";
 import {Button, Popconfirm, Switch, Table} from "antd";
 import moment from "moment";
 import * as Setting from "./Setting";
-import * as ModelBackend from "./backend/ModelBackend";
+import * as AdapterBackend from "./backend/AdapterBackend";
 import i18next from "i18next";
 import BaseListPage from "./BaseListPage";
 
-class ModelListPage extends BaseListPage {
-  newModel() {
+class AdapterListPage extends BaseListPage {
+  newAdapter() {
     const randomName = Setting.getRandomName();
     return {
       owner: "built-in",
-      name: `model_${randomName}`,
+      name: `adapter_${randomName}`,
       createdTime: moment().format(),
-      displayName: `New Model - ${randomName}`,
-      modelText: "",
-      isEnabled: true,
+      organization: "built-in",
+      type: "Database",
+      host: "localhost",
+      port: 3306,
+      user: "root",
+      password: "123456",
+      databaseType: "mysql",
+      database: "dbName",
+      table: "tableName",
+      isEnabled: false,
     };
   }
 
-  addModel() {
-    const newModel = this.newModel();
-    ModelBackend.addModel(newModel)
+  addAdapter() {
+    const newAdapter = this.newAdapter();
+    AdapterBackend.addAdapter(newAdapter)
       .then((res) => {
-        this.props.history.push({pathname: `/models/${newModel.owner}/${newModel.name}`, mode: "add"});
+        this.props.history.push({pathname: `/adapters/${newAdapter.owner}/${newAdapter.name}`, mode: "add"});
       }
       )
       .catch(error => {
-        Setting.showMessage("error", `Model failed to add: ${error}`);
+        Setting.showMessage("error", `Adapter failed to add: ${error}`);
       });
   }
 
-  deleteModel(i) {
-    ModelBackend.deleteModel(this.state.data[i])
+  deleteAdapter(i) {
+    AdapterBackend.deleteAdapter(this.state.data[i])
       .then((res) => {
-        Setting.showMessage("success", "Model deleted successfully");
+        Setting.showMessage("success", "Adapter deleted successfully");
         this.setState({
           data: Setting.deleteRow(this.state.data, i),
           pagination: {total: this.state.pagination.total - 1},
@@ -57,19 +64,19 @@ class ModelListPage extends BaseListPage {
       }
       )
       .catch(error => {
-        Setting.showMessage("error", `Model failed to delete: ${error}`);
+        Setting.showMessage("error", `Adapter failed to delete: ${error}`);
       });
   }
 
-  renderTable(models) {
+  renderTable(adapters) {
     const columns = [
       {
         title: i18next.t("general:Organization"),
-        dataIndex: "owner",
-        key: "owner",
+        dataIndex: "organization",
+        key: "organization",
         width: "120px",
         sorter: true,
-        ...this.getColumnSearchProps("owner"),
+        ...this.getColumnSearchProps("organization"),
         render: (text, record, index) => {
           return (
             <Link to={`/organizations/${text}`}>
@@ -88,7 +95,7 @@ class ModelListPage extends BaseListPage {
         ...this.getColumnSearchProps("name"),
         render: (text, record, index) => {
           return (
-            <Link to={`/models/${record.owner}/${text}`}>
+            <Link to={`/adapters/${text}`}>
               {text}
             </Link>
           );
@@ -105,12 +112,68 @@ class ModelListPage extends BaseListPage {
         },
       },
       {
-        title: i18next.t("general:Display name"),
-        dataIndex: "displayName",
-        key: "displayName",
-        width: "200px",
+        title: i18next.t("provider:Type"),
+        dataIndex: "type",
+        key: "type",
+        width: "100px",
         sorter: true,
-        ...this.getColumnSearchProps("displayName"),
+        filterMultiple: false,
+        filters: [
+          {text: "Database", value: "Database"},
+        ],
+      },
+      {
+        title: i18next.t("provider:Host"),
+        dataIndex: "host",
+        key: "host",
+        width: "120px",
+        sorter: true,
+        ...this.getColumnSearchProps("host"),
+      },
+      {
+        title: i18next.t("provider:Port"),
+        dataIndex: "port",
+        key: "port",
+        width: "100px",
+        sorter: true,
+        ...this.getColumnSearchProps("port"),
+      },
+      {
+        title: i18next.t("general:User"),
+        dataIndex: "user",
+        key: "user",
+        width: "120px",
+        sorter: true,
+        ...this.getColumnSearchProps("user"),
+      },
+      {
+        title: i18next.t("general:Password"),
+        dataIndex: "password",
+        key: "password",
+        width: "120px",
+        sorter: true,
+        ...this.getColumnSearchProps("password"),
+      },
+      {
+        title: i18next.t("syncer:Database type"),
+        dataIndex: "databaseType",
+        key: "databaseType",
+        width: "120px",
+        sorter: (a, b) => a.databaseType.localeCompare(b.databaseType),
+      },
+      {
+        title: i18next.t("syncer:Database"),
+        dataIndex: "database",
+        key: "database",
+        width: "120px",
+        sorter: true,
+      },
+      {
+        title: i18next.t("syncer:Table"),
+        dataIndex: "table",
+        key: "table",
+        width: "120px",
+        sorter: true,
       },
       {
         title: i18next.t("general:Is enabled"),
@@ -133,11 +196,10 @@ class ModelListPage extends BaseListPage {
         render: (text, record, index) => {
           return (
             <div>
-              <Button style={{marginTop: "10px", marginBottom: "10px", marginRight: "10px"}} type="primary"
-                onClick={() => this.props.history.push(`/models/${record.owner}/${record.name}`)}>{i18next.t("general:Edit")}</Button>
+              <Button style={{marginTop: "10px", marginBottom: "10px", marginRight: "10px"}} type="primary" onClick={() => this.props.history.push(`/adapters/${record.owner}/${record.name}`)}>{i18next.t("general:Edit")}</Button>
               <Popconfirm
-                title={`Sure to delete model: ${record.name} ?`}
-                onConfirm={() => this.deleteModel(index)}
+                title={`Sure to delete adapter: ${record.name} ?`}
+                onConfirm={() => this.deleteAdapter(index)}
               >
                 <Button style={{marginBottom: "10px"}} type="danger">{i18next.t("general:Delete")}</Button>
               </Popconfirm>
@@ -156,13 +218,11 @@ class ModelListPage extends BaseListPage {
 
     return (
       <div>
-        <Table scroll={{x: "max-content"}} columns={columns} dataSource={models} rowKey="name" size="middle" bordered
-          pagination={paginationProps}
+        <Table scroll={{x: "max-content"}} columns={columns} dataSource={adapters} rowKey="name" size="middle" bordered pagination={paginationProps}
           title={() => (
             <div>
-              {i18next.t("general:Models")}&nbsp;&nbsp;&nbsp;&nbsp;
-              <Button type="primary" size="small"
-                onClick={this.addModel.bind(this)}>{i18next.t("general:Add")}</Button>
+              {i18next.t("general:Adapters")}&nbsp;&nbsp;&nbsp;&nbsp;
+              <Button type="primary" size="small" onClick={this.addAdapter.bind(this)}>{i18next.t("general:Add")}</Button>
             </div>
           )}
           loading={this.state.loading}
@@ -180,7 +240,7 @@ class ModelListPage extends BaseListPage {
       value = params.type;
     }
     this.setState({loading: true});
-    ModelBackend.getModels("", params.pagination.current, params.pagination.pageSize, field, value, sortField, sortOrder)
+    AdapterBackend.getAdapters("", params.pagination.current, params.pagination.pageSize, field, value, sortField, sortOrder)
       .then((res) => {
         if (res.status === "ok") {
           this.setState({
@@ -198,4 +258,4 @@ class ModelListPage extends BaseListPage {
   };
 }
 
-export default ModelListPage;
+export default AdapterListPage;

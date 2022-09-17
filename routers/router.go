@@ -60,6 +60,7 @@ func initAPI() {
 	beego.Router("/api/update-organization", &controllers.ApiController{}, "POST:UpdateOrganization")
 	beego.Router("/api/add-organization", &controllers.ApiController{}, "POST:AddOrganization")
 	beego.Router("/api/delete-organization", &controllers.ApiController{}, "POST:DeleteOrganization")
+	beego.Router("/api/get-default-application", &controllers.ApiController{}, "GET:GetDefaultApplication")
 
 	beego.Router("/api/get-global-users", &controllers.ApiController{}, "GET:GetGlobalUsers")
 	beego.Router("/api/get-users", &controllers.ApiController{}, "GET:GetUsers")
@@ -95,6 +96,13 @@ func initAPI() {
 	beego.Router("/api/update-model", &controllers.ApiController{}, "POST:UpdateModel")
 	beego.Router("/api/add-model", &controllers.ApiController{}, "POST:AddModel")
 	beego.Router("/api/delete-model", &controllers.ApiController{}, "POST:DeleteModel")
+
+	beego.Router("/api/get-adapters", &controllers.ApiController{}, "GET:GetCasbinAdapters")
+	beego.Router("/api/get-adapter", &controllers.ApiController{}, "GET:GetCasbinAdapter")
+	beego.Router("/api/update-adapter", &controllers.ApiController{}, "POST:UpdateCasbinAdapter")
+	beego.Router("/api/add-adapter", &controllers.ApiController{}, "POST:AddCasbinAdapter")
+	beego.Router("/api/delete-adapter", &controllers.ApiController{}, "POST:DeleteCasbinAdapter")
+	beego.Router("/api/sync-policies", &controllers.ApiController{}, "GET:SyncPolicies")
 
 	beego.Router("/api/set-password", &controllers.ApiController{}, "POST:SetPassword")
 	beego.Router("/api/check-user-password", &controllers.ApiController{}, "POST:CheckUserPassword")

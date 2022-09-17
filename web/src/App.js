@@ -72,6 +72,8 @@ import CasLogout from "./auth/CasLogout";
 import ModelListPage from "./ModelListPage";
 import ModelEditPage from "./ModelEditPage";
 import SystemInfo from "./SystemInfo";
+import AdapterListPage from "./AdapterListPage";
+import AdapterEditPage from "./AdapterEditPage";
 
 const {Header, Footer} = Layout;
 
@@ -123,6 +125,8 @@ class App extends Component {
       this.setState({selectedMenuKey: "/permissions"});
     } else if (uri.includes("/models")) {
       this.setState({selectedMenuKey: "/models"});
+    } else if (uri.includes("/adapters")) {
+      this.setState({selectedMenuKey: "/adapters"});
     } else if (uri.includes("/providers")) {
       this.setState({selectedMenuKey: "/providers"});
     } else if (uri.includes("/applications")) {
@@ -388,21 +392,27 @@ class App extends Component {
           </Link>
         </Menu.Item>
       );
+      res.push(
+        <Menu.Item key="/permissions">
+          <Link to="/permissions">
+            {i18next.t("general:Permissions")}
+          </Link>
+        </Menu.Item>
+      );
     }
-
-    res.push(
-      <Menu.Item key="/permissions">
-        <Link to="/permissions">
-          {i18next.t("general:Permissions")}
-        </Link>
-      </Menu.Item>
-    );
 
     if (Setting.isAdminUser(this.state.account)) {
       res.push(
         <Menu.Item key="/models">
           <Link to="/models">
             {i18next.t("general:Models")}
+          </Link>
+        </Menu.Item>
+      );
+      res.push(
+        <Menu.Item key="/adapters">
+          <Link to="/adapters">
+            {i18next.t("general:Adapters")}
           </Link>
         </Menu.Item>
       );
@@ -527,7 +537,7 @@ class App extends Component {
   }
 
   renderRouter() {
-    return(
+    return (
       <div>
         <Switch>
           <Route exact path="/result" render={(props) => this.renderHomeIfLoggedIn(<ResultPage {...props} />)} />
@@ -545,6 +555,8 @@ class App extends Component {
           <Route exact path="/permissions/:organizationName/:permissionName" render={(props) => this.renderLoginIfNotLoggedIn(<PermissionEditPage account={this.state.account} {...props} />)} />
           <Route exact path="/models" render={(props) => this.renderLoginIfNotLoggedIn(<ModelListPage account={this.state.account} {...props} />)} />
           <Route exact path="/models/:organizationName/:modelName" render={(props) => this.renderLoginIfNotLoggedIn(<ModelEditPage account={this.state.account} {...props} />)} />
+          <Route exact path="/adapters" render={(props) => this.renderLoginIfNotLoggedIn(<AdapterListPage account={this.state.account} {...props} />)} />
+          <Route exact path="/adapters/:organizationName/:adapterName" render={(props) => this.renderLoginIfNotLoggedIn(<AdapterEditPage account={this.state.account} {...props} />)} />
           <Route exact path="/providers" render={(props) => this.renderLoginIfNotLoggedIn(<ProviderListPage account={this.state.account} {...props} />)} />
           <Route exact path="/providers/:providerName" render={(props) => this.renderLoginIfNotLoggedIn(<ProviderEditPage account={this.state.account} {...props} />)} />
           <Route exact path="/applications" render={(props) => this.renderLoginIfNotLoggedIn(<ApplicationListPage account={this.state.account} {...props} />)} />
@@ -618,7 +630,7 @@ class App extends Component {
         </div>
       );
     } else {
-      return(
+      return (
         <div>
           <Header style={{padding: "0", marginBottom: "3px"}}>
             {
@@ -746,6 +758,7 @@ class App extends Component {
     const organization = this.state.account.organization;
     return (
       <React.Fragment>
+        <div style={{display: "none"}} id="CasdoorApplicationName" value={this.state.account.signupApplication} />
         <Helmet>
           <title>{organization.displayName}</title>
           <link rel="icon" href={organization.favicon} />

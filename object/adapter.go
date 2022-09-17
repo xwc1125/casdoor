@@ -43,7 +43,7 @@ func InitConfig() {
 }
 
 func InitAdapter(createDatabase bool) {
-	adapter = NewAdapter(conf.GetConfigString("driverName"), conf.GetBeegoConfDataSourceName(), conf.GetConfigString("dbName"))
+	adapter = NewAdapter(conf.GetConfigString("driverName"), conf.GetConfigDataSourceName(), conf.GetConfigString("dbName"))
 	if createDatabase {
 		adapter.CreateDatabase()
 	}
@@ -141,6 +141,11 @@ func (a *Adapter) createTable() {
 	}
 
 	err = a.Engine.Sync2(new(Model))
+	if err != nil {
+		panic(err)
+	}
+
+	err = a.Engine.Sync2(new(CasbinAdapter))
 	if err != nil {
 		panic(err)
 	}

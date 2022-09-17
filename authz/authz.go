@@ -15,6 +15,8 @@
 package authz
 
 import (
+	"strings"
+
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	xormadapter "github.com/casbin/xorm-adapter/v2"
@@ -28,7 +30,7 @@ func InitAuthz() {
 	var err error
 
 	tableNamePrefix := conf.GetConfigString("tableNamePrefix")
-	a, err := xormadapter.NewAdapterWithTableName(conf.GetConfigString("driverName"), conf.GetBeegoConfDataSourceName()+conf.GetConfigString("dbName"), "casbin_rule", tableNamePrefix, true)
+	a, err := xormadapter.NewAdapterWithTableName(conf.GetConfigString("driverName"), conf.GetConfigDataSourceName()+conf.GetConfigString("dbName"), "casbin_rule", tableNamePrefix, true)
 	if err != nil {
 		panic(err)
 	}
@@ -108,6 +110,7 @@ p, *, *, GET, /api/saml/metadata, *, *
 p, *, *, *, /cas, *, *
 p, *, *, *, /api/webauthn, *, *
 p, *, *, GET, /api/get-release, *, *
+p, *, *, GET, /api/get-default-application, *, *
 `
 
 		sa := stringadapter.NewAdapter(ruleText)
@@ -128,10 +131,35 @@ p, *, *, GET, /api/get-release, *, *
 }
 
 func IsAllowed(subOwner string, subName string, method string, urlPath string, objOwner string, objName string) bool {
+	if conf.IsDemoMode() {
+		if !isAllowedInDemoMode(subOwner, subName, method, urlPath, objOwner, objName) {
+			return false
+		}
+	}
+
 	res, err := Enforcer.Enforce(subOwner, subName, method, urlPath, objOwner, objName)
 	if err != nil {
 		panic(err)
 	}
 
 	return res
+}
+
+func isAllowedInDemoMode(subOwner string, subName string, method string, urlPath string, objOwner string, objName string) bool {
+	if method == "POST" {
+		if strings.HasPrefix(urlPath, "/api/login") || urlPath == "/api/logout" || urlPath == "/api/signup" || urlPath == "/api/send-verification-code" {
+			return true
+		} else if urlPath == "/api/update-user" {
+			// Allow ordinary users to update their own information
+			if subOwner == objOwner && subName == objName && !(subOwner == "built-in" && subName == "admin") {
+				return true
+			}
+			return false
+		} else {
+			return false
+		}
+	}
+
+	// If method equals GET
+	return true
 }
