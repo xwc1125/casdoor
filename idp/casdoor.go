@@ -22,6 +22,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -40,6 +41,18 @@ func NewCasdoorIdProvider(clientId string, clientSecret string, redirectUrl stri
 	idp.Config = config
 	idp.Host = hostUrl
 	return idp
+}
+
+func (idp *CasdoorIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &CasdoorIdProvider{}
+	config := idp1.getConfig(opts["hostUrl"])
+	config.ClientID = clientId
+	config.ClientSecret = clientSecret
+	config.RedirectURL = redirectUrl
+	idp1.Config = config
+	idp1.Host = opts["hostUrl"]
+
+	return idp1
 }
 
 func (idp *CasdoorIdProvider) SetHttpClient(client *http.Client) {
@@ -65,7 +78,7 @@ func (idp *CasdoorIdProvider) GetToken(code string) (*oauth2.Token, error) {
 		"client_id":     {idp.Config.ClientID},
 		"client_secret": {idp.Config.ClientSecret},
 		"code":          {code},
-		"grant_type":    {"authorization_code"},
+		"grant_type":    {gparam.GrantType_AuthorizationCode.String()},
 	})
 	if err != nil {
 		return nil, err

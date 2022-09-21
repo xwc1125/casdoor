@@ -25,6 +25,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -40,6 +41,15 @@ func NewGiteeIdProvider(clientId string, clientSecret string, redirectUrl string
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *GiteeIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &GiteeIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
 }
 
 func (idp *GiteeIdProvider) SetHttpClient(client *http.Client) {
@@ -78,7 +88,7 @@ type GiteeAccessToken struct {
 // get more detail via: https://gitee.com/api/v5/oauth_doc#/
 func (idp *GiteeIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	params := url.Values{}
-	params.Add("grant_type", "authorization_code")
+	params.Add("grant_type", gparam.GrantType_AuthorizationCode.String())
 	params.Add("client_id", idp.Config.ClientID)
 	params.Add("client_secret", idp.Config.ClientSecret)
 	params.Add("code", code)

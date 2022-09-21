@@ -18,17 +18,26 @@ type CaptchaProvider interface {
 	VerifyCaptcha(token, clientSecret string) (bool, error)
 }
 
+var (
+	captchaProviders = make(map[string]CaptchaProvider, 0)
+)
+
+func init() {
+	RegisterCaptchaProvider("Aliyun Captcha", NewAliyunCaptchaProvider())
+	RegisterCaptchaProvider("Default", NewDefaultCaptchaProvider())
+	RegisterCaptchaProvider("GEETEST", NewGEETESTCaptchaProvider())
+	RegisterCaptchaProvider("hCaptcha", NewHCaptchaProvider())
+	RegisterCaptchaProvider("reCAPTCHA", NewReCaptchaProvider())
+}
+
+func RegisterCaptchaProvider(captchaType string, provider CaptchaProvider) {
+	captchaProviders[captchaType] = provider
+}
+
 func GetCaptchaProvider(captchaType string) CaptchaProvider {
-	if captchaType == "Default" {
-		return NewDefaultCaptchaProvider()
-	} else if captchaType == "reCAPTCHA" {
-		return NewReCaptchaProvider()
-	} else if captchaType == "hCaptcha" {
-		return NewHCaptchaProvider()
-	} else if captchaType == "Aliyun Captcha" {
-		return NewAliyunCaptchaProvider()
-	} else if captchaType == "GEETEST" {
-		return NewGEETESTCaptchaProvider()
+	provider, ok := captchaProviders[captchaType]
+	if !ok {
+		return nil
 	}
-	return nil
+	return provider
 }

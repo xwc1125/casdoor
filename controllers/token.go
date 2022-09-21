@@ -19,6 +19,7 @@ import (
 	"net/http"
 
 	"github.com/astaxie/beego/utils/pagination"
+	"github.com/casdoor/casdoor/gparam"
 	"github.com/casdoor/casdoor/object"
 	"github.com/casdoor/casdoor/util"
 )
@@ -172,7 +173,10 @@ func (c *ApiController) GetOAuthCode() {
 // @Success 401 {object} object.TokenError The Response object
 // @router /login/oauth/access_token [post]
 func (c *ApiController) GetOAuthToken() {
-	grantType := c.Input().Get("grant_type")
+	grantType, err := gparam.ParseGrantType(c.Input().Get("grant_type"))
+	if err != nil {
+		// todo 返回错误
+	}
 	clientId := c.Input().Get("client_id")
 	clientSecret := c.Input().Get("client_secret")
 	code := c.Input().Get("code")
@@ -223,7 +227,10 @@ func (c *ApiController) GetOAuthToken() {
 // @Success 401 {object} object.TokenError The Response object
 // @router /login/oauth/refresh_token [post]
 func (c *ApiController) RefreshToken() {
-	grantType := c.Input().Get("grant_type")
+	grantType, err := gparam.ParseGrantType(c.Input().Get("grant_type"))
+	if err != nil {
+		// todo 返回错误
+	}
 	refreshToken := c.Input().Get("refresh_token")
 	scope := c.Input().Get("scope")
 	clientId := c.Input().Get("client_id")

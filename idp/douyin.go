@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -35,6 +36,14 @@ func NewDouyinIdProvider(clientId string, clientSecret string, redirectUrl strin
 	idp := &DouyinIdProvider{}
 	idp.Config = idp.getConfig(clientId, clientSecret, redirectUrl)
 	return idp
+}
+
+func (idp *DouyinIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &DouyinIdProvider{}
+
+	idp1.Config = idp1.getConfig(clientId, clientSecret, redirectUrl)
+
+	return idp1
 }
 
 func (idp *DouyinIdProvider) SetHttpClient(client *http.Client) {
@@ -91,7 +100,7 @@ type DouyinTokenResp struct {
 func (idp *DouyinIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	payload := url.Values{}
 	payload.Set("code", code)
-	payload.Set("grant_type", "authorization_code")
+	payload.Set("grant_type", gparam.GrantType_AuthorizationCode.String())
 	payload.Set("client_key", idp.Config.ClientID)
 	payload.Set("client_secret", idp.Config.ClientSecret)
 	resp, err := idp.Client.PostForm(idp.Config.Endpoint.TokenURL, payload)

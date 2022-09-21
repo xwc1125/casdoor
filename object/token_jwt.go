@@ -60,6 +60,7 @@ func getShortClaims(claims Claims) ClaimsShort {
 	return res
 }
 
+// generateJwtToken 生成jwt token
 func generateJwtToken(application *Application, user *User, nonce string, scope string, host string) (string, string, string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(time.Duration(application.ExpireInHours) * time.Hour)
@@ -117,7 +118,10 @@ func generateJwtToken(application *Application, user *User, nonce string, scope 
 	if err != nil {
 		return "", "", "", err
 	}
-	refreshTokenString, err := refreshToken.SignedString(key)
+	var refreshTokenString string
+	if refreshToken != nil {
+		refreshTokenString, err = refreshToken.SignedString(key)
+	}
 
 	return tokenString, refreshTokenString, name, err
 }

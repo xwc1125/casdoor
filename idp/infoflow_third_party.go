@@ -41,6 +41,16 @@ func NewInfoflowIdProvider(clientId string, clientSecret string, appId string, r
 	return idp
 }
 
+func (idp *InfoflowIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &InfoflowIdProvider{}
+
+	config := idp.getConfig(clientId, clientSecret, redirectUrl)
+	idp.Config = config
+	idp.AgentId = opts["appId"]
+
+	return idp1
+}
+
 func (idp *InfoflowIdProvider) SetHttpClient(client *http.Client) {
 	idp.Client = client
 }

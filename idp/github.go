@@ -43,6 +43,18 @@ func NewGithubIdProvider(clientId string, clientSecret string, redirectUrl strin
 	return idp
 }
 
+func (idp *GithubIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &GithubIdProvider{}
+
+	config := idp1.getConfig()
+	config.ClientID = clientId
+	config.ClientSecret = clientSecret
+	config.RedirectURL = redirectUrl
+	idp1.Config = config
+
+	return idp1
+}
+
 func (idp *GithubIdProvider) SetHttpClient(client *http.Client) {
 	idp.Client = client
 }
@@ -94,7 +106,7 @@ func (idp *GithubIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	return token, nil
 }
 
-//{
+// {
 //	"login": "jimgreen",
 //	"id": 3781234,
 //	"node_id": "MDQ6VXNlcjM3O123456=",
@@ -139,7 +151,7 @@ func (idp *GithubIdProvider) GetToken(code string) (*oauth2.Token, error) {
 //		"collaborators": 0,
 //		"private_repos": 10000
 //	}
-//}
+// }
 
 type GitHubUserInfo struct {
 	Login                   string      `json:"login"`

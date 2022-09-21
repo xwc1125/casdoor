@@ -50,6 +50,25 @@ func NewCustomIdProvider(clientId string, clientSecret string, redirectUrl strin
 	return idp
 }
 
+func (idp *CustomIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &CustomIdProvider{}
+
+	idp1.UserInfoUrl = opts["userInfoUrl"]
+
+	config := &oauth2.Config{
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
+		RedirectURL:  redirectUrl,
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  opts["authUrl"],
+			TokenURL: opts["tokenUrl"],
+		},
+	}
+	idp1.Config = config
+
+	return idp1
+}
+
 func (idp *CustomIdProvider) SetHttpClient(client *http.Client) {
 	idp.Client = client
 }

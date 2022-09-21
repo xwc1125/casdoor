@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -38,6 +39,15 @@ func NewDingTalkIdProvider(clientId string, clientSecret string, redirectUrl str
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *DingTalkIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &DingTalkIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
 }
 
 // SetHttpClient ...
@@ -81,7 +91,7 @@ func (idp *DingTalkIdProvider) GetToken(code string) (*oauth2.Token, error) {
 		ClientSecret string `json:"clientSecret"`
 		Code         string `json:"code"`
 		GrantType    string `json:"grantType"`
-	}{idp.Config.ClientID, idp.Config.ClientSecret, code, "authorization_code"}
+	}{idp.Config.ClientID, idp.Config.ClientSecret, code, gparam.GrantType_AuthorizationCode.String()}
 
 	data, err := idp.postWithBody(pTokenParams, idp.Config.Endpoint.TokenURL)
 	if err != nil {

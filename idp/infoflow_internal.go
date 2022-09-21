@@ -38,6 +38,16 @@ func NewInfoflowInternalIdProvider(clientId string, clientSecret string, appId s
 	return idp
 }
 
+func (idp *InfoflowInternalIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &InfoflowInternalIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+	idp1.AgentId = opts["appId"]
+
+	return idp1
+}
+
 func (idp *InfoflowInternalIdProvider) SetHttpClient(client *http.Client) {
 	idp.Client = client
 }

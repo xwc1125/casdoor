@@ -40,6 +40,15 @@ func NewFacebookIdProvider(clientId string, clientSecret string, redirectUrl str
 	return idp
 }
 
+func (idp *FacebookIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &FacebookIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
+}
+
 func (idp *FacebookIdProvider) SetHttpClient(client *http.Client) {
 	idp.Client = client
 }
@@ -107,7 +116,7 @@ func (idp *FacebookIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	return &token, nil
 }
 
-//{
+// {
 //    "id": "123456789",
 //    "name": "Example Name",
 //    "name_format": "{first} {last}",
@@ -120,7 +129,7 @@ func (idp *FacebookIdProvider) GetToken(code string) (*oauth2.Token, error) {
 //        }
 //    },
 //    "email": "test@example.com"
-//}
+// }
 
 type FacebookUserInfo struct {
 	Id         string   `json:"id"`          // The app user's App-Scoped User ID. This ID is unique to the app and cannot be used by other apps.

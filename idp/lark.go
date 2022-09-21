@@ -21,6 +21,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -36,6 +37,15 @@ func NewLarkIdProvider(clientId string, clientSecret string, redirectUrl string)
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *LarkIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &LarkIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
 }
 
 func (idp *LarkIdProvider) SetHttpClient(client *http.Client) {
@@ -158,7 +168,7 @@ func (idp *LarkIdProvider) GetUserInfo(token *oauth2.Token) (*UserInfo, error) {
 	body := &struct {
 		GrantType string `json:"grant_type"`
 		Code      string `json:"code"`
-	}{"authorization_code", token.Extra("code").(string)}
+	}{gparam.GrantType_AuthorizationCode.String(), token.Extra("code").(string)}
 	data, _ := json.Marshal(body)
 	req, err := http.NewRequest("POST", "https://open.feishu.cn/open-apis/authen/v1/access_token", strings.NewReader(string(data)))
 	if err != nil {

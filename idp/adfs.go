@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jwt"
@@ -46,6 +47,19 @@ func NewAdfsIdProvider(clientId string, clientSecret string, redirectUrl string,
 	idp.Config = config
 	idp.Host = hostUrl
 	return idp
+}
+
+func (idp *AdfsIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &AdfsIdProvider{}
+
+	config := idp1.getConfig(opts["hostUrl"])
+	config.ClientID = clientId
+	config.ClientSecret = clientSecret
+	config.RedirectURL = redirectUrl
+	idp1.Config = config
+	idp1.Host = opts["hostUrl"]
+
+	return idp1
 }
 
 func (idp *AdfsIdProvider) SetHttpClient(client *http.Client) {
@@ -82,7 +96,7 @@ type AdfsToken struct {
 func (idp *AdfsIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	payload := url.Values{}
 	payload.Set("code", code)
-	payload.Set("grant_type", "authorization_code")
+	payload.Set("grant_type", gparam.GrantType_AuthorizationCode.String())
 	payload.Set("client_id", idp.Config.ClientID)
 	payload.Set("redirect_uri", idp.Config.RedirectURL)
 	resp, err := idp.Client.PostForm(idp.Config.Endpoint.TokenURL, payload)

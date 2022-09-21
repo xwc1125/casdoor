@@ -60,6 +60,7 @@ type Application struct {
 	TokenFormat          string   `xorm:"varchar(100)" json:"tokenFormat"`
 	ExpireInHours        int      `json:"expireInHours"`
 	RefreshExpireInHours int      `json:"refreshExpireInHours"`
+	NoReturnIdToken      bool     `json:"isReturnIdToken"` // 是否返回idToken
 	SignupUrl            string   `xorm:"varchar(200)" json:"signupUrl"`
 	SigninUrl            string   `xorm:"varchar(200)" json:"signinUrl"`
 	ForgetUrl            string   `xorm:"varchar(200)" json:"forgetUrl"`
@@ -117,9 +118,9 @@ func getProviderMap(owner string) map[string]*Provider {
 	providers := GetProviders(owner)
 	m := map[string]*Provider{}
 	for _, provider := range providers {
-		//if provider.Category != "OAuth" {
+		// if provider.Category != "OAuth" {
 		//	continue
-		//}
+		// }
 
 		m[provider.Name] = GetMaskedProvider(provider)
 	}

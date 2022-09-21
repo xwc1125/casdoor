@@ -24,6 +24,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -39,6 +40,15 @@ func NewWeChatIdProvider(clientId string, clientSecret string, redirectUrl strin
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *WeChatIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &WeChatIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
 }
 
 func (idp *WeChatIdProvider) SetHttpClient(client *http.Client) {
@@ -75,7 +85,7 @@ type WechatAccessToken struct {
 // get more detail via: https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
 func (idp *WeChatIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	params := url.Values{}
-	params.Add("grant_type", "authorization_code")
+	params.Add("grant_type", gparam.GrantType_AuthorizationCode.String())
 	params.Add("appid", idp.Config.ClientID)
 	params.Add("secret", idp.Config.ClientSecret)
 	params.Add("code", code)
@@ -123,7 +133,7 @@ func (idp *WeChatIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	return &token, nil
 }
 
-//{
+// {
 //	"openid": "of_Hl5zVpyj0vwzIlAyIlnXe1234",
 //	"nickname": "飞翔的企鹅",
 //	"sex": 1,
@@ -134,7 +144,7 @@ func (idp *WeChatIdProvider) GetToken(code string) (*oauth2.Token, error) {
 //	"headimgurl": "https:\/\/thirdwx.qlogo.cn\/mmopen\/vi_32\/Q0j4TwGTfTK6xc7vGca4KtibJib5dslRianc9VHt9k2N7fewYOl8fak7grRM7nS5V6HcvkkIkGThWUXPjDbXkQFYA\/132",
 //	"privilege": [],
 //	"unionid": "oxW9O1VAL8x-zfWP2hrqW9c81234"
-//}
+// }
 
 type WechatUserInfo struct {
 	Openid     string   `json:"openid"`   // The ID of an ordinary user, which is unique to the current developer account

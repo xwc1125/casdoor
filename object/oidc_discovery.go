@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/casdoor/casdoor/conf"
+	"github.com/casdoor/casdoor/gparam"
 	"gopkg.in/square/go-jose.v2"
 )
 
@@ -81,7 +82,7 @@ func GetOidcDiscovery(host string) OidcDiscovery {
 		IntrospectionEndpoint:                  fmt.Sprintf("%s/api/login/oauth/introspect", originBackend),
 		ResponseTypesSupported:                 []string{"code", "token", "id_token", "code token", "code id_token", "token id_token", "code token id_token", "none"},
 		ResponseModesSupported:                 []string{"login", "code", "link"},
-		GrantTypesSupported:                    []string{"password", "authorization_code"},
+		GrantTypesSupported:                    []string{"password", gparam.GrantType_AuthorizationCode.String()},
 		SubjectTypesSupported:                  []string{"public"},
 		IdTokenSigningAlgValuesSupported:       []string{"RS256"},
 		ScopesSupported:                        []string{"openid", "email", "profile", "address", "phone", "offline_access"},

@@ -42,6 +42,18 @@ func NewGoogleIdProvider(clientId string, clientSecret string, redirectUrl strin
 	return idp
 }
 
+func (idp *GoogleIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &GoogleIdProvider{}
+
+	config := idp.getConfig()
+	config.ClientID = clientId
+	config.ClientSecret = clientSecret
+	config.RedirectURL = redirectUrl
+	idp1.Config = config
+
+	return idp1
+}
+
 func (idp *GoogleIdProvider) SetHttpClient(client *http.Client) {
 	idp.Client = client
 }
@@ -65,7 +77,7 @@ func (idp *GoogleIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	return idp.Config.Exchange(ctx, code)
 }
 
-//{
+// {
 //	"id": "110613473084924141234",
 //	"email": "jimgreen@gmail.com",
 //	"verified_email": true,
@@ -74,7 +86,7 @@ func (idp *GoogleIdProvider) GetToken(code string) (*oauth2.Token, error) {
 //	"family_name": "Green",
 //	"picture": "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
 //	"locale": "en"
-//}
+// }
 
 type GoogleUserInfo struct {
 	Id            string `json:"id"`

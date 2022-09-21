@@ -41,6 +41,18 @@ func NewBaiduIdProvider(clientId string, clientSecret string, redirectUrl string
 	return idp
 }
 
+func (idp *BaiduIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &BaiduIdProvider{}
+
+	config := idp1.getConfig()
+	config.ClientID = clientId
+	config.ClientSecret = clientSecret
+	config.RedirectURL = redirectUrl
+	idp1.Config = config
+
+	return idp1
+}
+
 func (idp *BaiduIdProvider) SetHttpClient(client *http.Client) {
 	idp.Client = client
 }

@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -39,6 +40,15 @@ func NewWeiBoIdProvider(clientId string, clientSecret string, redirectUrl string
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *WeiBoIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &WeiBoIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
 }
 
 func (idp *WeiBoIdProvider) SetHttpClient(client *http.Client) {
@@ -73,7 +83,7 @@ type WeiboAccessToken struct {
 // get more detail via: https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
 func (idp *WeiBoIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	params := url.Values{}
-	params.Add("grant_type", "authorization_code")
+	params.Add("grant_type", gparam.GrantType_AuthorizationCode.String())
 	params.Add("client_id", idp.Config.ClientID)
 	params.Add("client_secret", idp.Config.ClientSecret)
 	params.Add("code", code)

@@ -23,6 +23,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -38,6 +39,15 @@ func NewGitlabIdProvider(clientId string, clientSecret string, redirectUrl strin
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *GitlabIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &GitlabIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
 }
 
 func (idp *GitlabIdProvider) SetHttpClient(client *http.Client) {
@@ -73,7 +83,7 @@ type GitlabProviderToken struct {
 // get more detail via: https://docs.gitlab.com/ee/api/oauth2.html
 func (idp *GitlabIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	params := url.Values{}
-	params.Add("grant_type", "authorization_code")
+	params.Add("grant_type", gparam.GrantType_AuthorizationCode.String())
 	params.Add("client_id", idp.Config.ClientID)
 	params.Add("client_secret", idp.Config.ClientSecret)
 	params.Add("code", code)

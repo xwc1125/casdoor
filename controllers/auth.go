@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/casdoor/casdoor/conf"
+	"github.com/casdoor/casdoor/gparam"
 	"github.com/casdoor/casdoor/idp"
 	"github.com/casdoor/casdoor/object"
 	"github.com/casdoor/casdoor/proxy"
@@ -86,7 +87,7 @@ func (c *ApiController) HandleLoggedIn(application *object.Application, user *ob
 			c.SetSessionUsername(userId)
 		}
 	} else if form.Type == ResponseTypeToken || form.Type == ResponseTypeIdToken { // implicit flow
-		if !object.IsGrantTypeValid(form.Type, application.GrantTypes) {
+		if !object.IsGrantTypeValid(gparam.GrantType(form.Type), application.GrantTypes) {
 			resp = &Response{Status: "error", Msg: fmt.Sprintf("error: grant_type: %s is not supported in this application", form.Type), Data: ""}
 		} else {
 			scope := c.Input().Get("scope")
@@ -151,6 +152,7 @@ func (c *ApiController) GetApplicationLogin() {
 	scope := c.Input().Get("scope")
 	state := c.Input().Get("state")
 
+	// 校验oauth登录
 	msg, application := object.CheckOAuthLogin(clientId, responseType, redirectUri, scope, state)
 	application = object.GetMaskedApplication(application, "")
 	if msg != "" {

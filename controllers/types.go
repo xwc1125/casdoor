@@ -14,16 +14,18 @@
 
 package controllers
 
+import "github.com/casdoor/casdoor/gparam"
+
 type TokenRequest struct {
-	GrantType    string `json:"grant_type"`
-	Code         string `json:"code"`
-	ClientId     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
-	Verifier     string `json:"code_verifier"`
-	Scope        string `json:"scope"`
-	Username     string `json:"username"`
-	Password     string `json:"password"`
-	Tag          string `json:"tag"`
-	Avatar       string `json:"avatar"`
-	RefreshToken string `json:"refresh_token"`
+	GrantType    gparam.GrantType `json:"grant_type"`
+	Code         string           `json:"code"`
+	ClientId     string           `json:"client_id"`
+	ClientSecret string           `json:"client_secret"`
+	Verifier     string           `json:"code_verifier"`
+	Scope        string           `json:"scope"`
+	Username     string           `json:"username"`
+	Password     string           `json:"password"`
+	Tag          string           `json:"tag"`
+	Avatar       string           `json:"avatar"`
+	RefreshToken string           `json:"refresh_token"`
 }

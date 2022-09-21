@@ -23,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -38,6 +39,14 @@ func NewBilibiliIdProvider(clientId string, clientSecret string, redirectUrl str
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *BilibiliIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &BilibiliIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+	return idp1
 }
 
 func (idp *BilibiliIdProvider) SetHttpClient(client *http.Client) {
@@ -99,7 +108,7 @@ func (idp *BilibiliIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	}{
 		idp.Config.ClientID,
 		idp.Config.ClientSecret,
-		"authorization_code",
+		gparam.GrantType_AuthorizationCode.String(),
 		code,
 	}
 

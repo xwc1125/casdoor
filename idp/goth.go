@@ -55,8 +55,9 @@ import (
 )
 
 type GothIdProvider struct {
-	Provider goth.Provider
-	Session  goth.Session
+	ProviderType string
+	Provider     goth.Provider
+	Session      goth.Session
 }
 
 func NewGothIdProvider(providerType string, clientId string, clientSecret string, redirectUrl string) *GothIdProvider {
@@ -205,6 +206,10 @@ func NewGothIdProvider(providerType string, clientId string, clientSecret string
 	}
 
 	return &idp
+}
+
+func (idp *GothIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	return NewGothIdProvider(idp.ProviderType, clientId, clientSecret, redirectUrl)
 }
 
 // SetHttpClient

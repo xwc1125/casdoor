@@ -22,6 +22,19 @@ type PaymentProvider interface {
 	GetInvoice(paymentName string, personName string, personIdCard string, personEmail string, personPhone string, invoiceType string, invoiceTitle string, invoiceTaxId string) (string, error)
 }
 
+var (
+	paymentProviders = make(map[string]PaymentProvider, 0)
+)
+
+func init() {
+	// RegisterPaymentProvider("Alipay", NewAliyunCaptchaProvider())
+	// RegisterPaymentProvider("GC", NewDefaultCaptchaProvider())
+}
+
+func RegisterPaymentProvider(paymentType string, provider PaymentProvider) {
+	paymentProviders[paymentType] = provider
+}
+
 func GetPaymentProvider(typ string, appId string, clientSecret string, host string, appCertificate string, appPrivateKey string, authorityPublicKey string, authorityRootPublicKey string) PaymentProvider {
 	if typ == "Alipay" {
 		return NewAlipayPaymentProvider(appId, appCertificate, appPrivateKey, authorityPublicKey, authorityRootPublicKey)

@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"regexp"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -41,6 +42,18 @@ func NewQqIdProvider(clientId string, clientSecret string, redirectUrl string) *
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *QqIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &QqIdProvider{}
+
+	config := idp.getConfig()
+	config.ClientID = clientId
+	config.ClientSecret = clientSecret
+	config.RedirectURL = redirectUrl
+	idp1.Config = config
+
+	return idp1
 }
 
 func (idp *QqIdProvider) SetHttpClient(client *http.Client) {
@@ -62,7 +75,7 @@ func (idp *QqIdProvider) getConfig() *oauth2.Config {
 
 func (idp *QqIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	params := url.Values{}
-	params.Add("grant_type", "authorization_code")
+	params.Add("grant_type", gparam.GrantType_AuthorizationCode.String())
 	params.Add("client_id", idp.Config.ClientID)
 	params.Add("client_secret", idp.Config.ClientSecret)
 	params.Add("code", code)
@@ -90,7 +103,7 @@ func (idp *QqIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	return token, nil
 }
 
-//{
+// {
 //	"ret": 0,
 //	"msg": "",
 //	"is_lost": 0,
@@ -113,7 +126,7 @@ func (idp *QqIdProvider) GetToken(code string) (*oauth2.Token, error) {
 //	"yellow_vip_level": "0",
 //	"level": "0",
 //	"is_yellow_year_vip": "0"
-//}
+// }
 
 type QqUserInfo struct {
 	Ret             int    `json:"ret"`

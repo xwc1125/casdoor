@@ -31,71 +31,93 @@ type UserInfo struct {
 }
 
 type IdProvider interface {
+	New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider
 	SetHttpClient(client *http.Client)
 	GetToken(code string) (*oauth2.Token, error)
 	GetUserInfo(token *oauth2.Token) (*UserInfo, error)
 }
 
+var (
+	idProviders = make(map[string]IdProvider, 0)
+)
+
+func init() {
+	RegisterIdProvider("GitHub", &GithubIdProvider{})
+	RegisterIdProvider("Google", &GoogleIdProvider{})
+	RegisterIdProvider("QQ", &QqIdProvider{})
+	RegisterIdProvider("WeChat", &WeChatIdProvider{})
+	RegisterIdProvider("Facebook", &FacebookIdProvider{})
+	RegisterIdProvider("DingTalk", &DingTalkIdProvider{})
+	RegisterIdProvider("Weibo", &WeiBoIdProvider{})
+	RegisterIdProvider("Gitee", &GiteeIdProvider{})
+	RegisterIdProvider("LinkedIn", &LinkedInIdProvider{})
+	RegisterIdProvider("WeCom-Internal", &WeComInternalIdProvider{})
+	RegisterIdProvider("WeCom-Third-party", &WeComIdProvider{})
+	RegisterIdProvider("Lark", &LarkIdProvider{})
+	RegisterIdProvider("GitLab", &GitlabIdProvider{})
+	RegisterIdProvider("Adfs", &AdfsIdProvider{})
+	RegisterIdProvider("Baidu", &BaiduIdProvider{})
+	RegisterIdProvider("Alipay", &AlipayIdProvider{})
+	RegisterIdProvider("Custom", &CustomIdProvider{})
+	RegisterIdProvider("Infoflow-Internal", &InfoflowInternalIdProvider{})
+	RegisterIdProvider("Infoflow-Third-party", &InfoflowIdProvider{})
+	RegisterIdProvider("Casdoor", &CasdoorIdProvider{})
+	RegisterIdProvider("Okta", &OktaIdProvider{})
+	RegisterIdProvider("Douyin", &DouyinIdProvider{})
+	RegisterIdProvider("Bilibili", &BilibiliIdProvider{})
+
+	RegisterIdProvider("Amazon", &GothIdProvider{ProviderType: "Amazon"})
+	RegisterIdProvider("Apple", &GothIdProvider{ProviderType: "Apple"})
+	RegisterIdProvider("AzureAD", &GothIdProvider{ProviderType: "AzureAD"})
+	RegisterIdProvider("Bitbucket", &GothIdProvider{ProviderType: "Bitbucket"})
+	RegisterIdProvider("DigitalOcean", &GothIdProvider{ProviderType: "DigitalOcean"})
+	RegisterIdProvider("Discord", &GothIdProvider{ProviderType: "Discord"})
+	RegisterIdProvider("Dropbox", &GothIdProvider{ProviderType: "Dropbox"})
+	RegisterIdProvider("Facebook", &GothIdProvider{ProviderType: "Facebook"})
+	RegisterIdProvider("Gitea", &GothIdProvider{ProviderType: "Gitea"})
+	RegisterIdProvider("GitHub", &GothIdProvider{ProviderType: "GitHub"})
+	RegisterIdProvider("GitLab", &GothIdProvider{ProviderType: "GitLab"})
+	RegisterIdProvider("Google", &GothIdProvider{ProviderType: "Google"})
+	RegisterIdProvider("Heroku", &GothIdProvider{ProviderType: "Heroku"})
+	RegisterIdProvider("Instagram", &GothIdProvider{ProviderType: "Instagram"})
+	RegisterIdProvider("Kakao", &GothIdProvider{ProviderType: "Kakao"})
+	RegisterIdProvider("Linkedin", &GothIdProvider{ProviderType: "Linkedin"})
+	RegisterIdProvider("Line", &GothIdProvider{ProviderType: "Line"})
+	RegisterIdProvider("MicrosoftOnline", &GothIdProvider{ProviderType: "MicrosoftOnline"})
+	RegisterIdProvider("Paypal", &GothIdProvider{ProviderType: "Paypal"})
+	RegisterIdProvider("SalesForce", &GothIdProvider{ProviderType: "SalesForce"})
+	RegisterIdProvider("Shopify", &GothIdProvider{ProviderType: "Shopify"})
+	RegisterIdProvider("Slack", &GothIdProvider{ProviderType: "Slack"})
+	RegisterIdProvider("Steam", &GothIdProvider{ProviderType: "Steam"})
+	RegisterIdProvider("Tumblr", &GothIdProvider{ProviderType: "Tumblr"})
+	RegisterIdProvider("Twitter", &GothIdProvider{ProviderType: "Twitter"})
+	RegisterIdProvider("Yahoo", &GothIdProvider{ProviderType: "Yahoo"})
+	RegisterIdProvider("Yandex", &GothIdProvider{ProviderType: "Yandex"})
+	RegisterIdProvider("Zoom", &GothIdProvider{ProviderType: "Zoom"})
+
+}
+
+func RegisterIdProvider(paymentType string, provider IdProvider) {
+	idProviders[paymentType] = provider
+}
+
 func GetIdProvider(typ string, subType string, clientId string, clientSecret string, appId string, redirectUrl string, hostUrl string, authUrl string, tokenUrl string, userInfoUrl string) IdProvider {
-	if typ == "GitHub" {
-		return NewGithubIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "Google" {
-		return NewGoogleIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "QQ" {
-		return NewQqIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "WeChat" {
-		return NewWeChatIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "Facebook" {
-		return NewFacebookIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "DingTalk" {
-		return NewDingTalkIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "Weibo" {
-		return NewWeiBoIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "Gitee" {
-		return NewGiteeIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "LinkedIn" {
-		return NewLinkedInIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "WeCom" {
-		if subType == "Internal" {
-			return NewWeComInternalIdProvider(clientId, clientSecret, redirectUrl)
-		} else if subType == "Third-party" {
-			return NewWeComIdProvider(clientId, clientSecret, redirectUrl)
-		} else {
-			return nil
-		}
-	} else if typ == "Lark" {
-		return NewLarkIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "GitLab" {
-		return NewGitlabIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "Adfs" {
-		return NewAdfsIdProvider(clientId, clientSecret, redirectUrl, hostUrl)
-	} else if typ == "Baidu" {
-		return NewBaiduIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "Alipay" {
-		return NewAlipayIdProvider(clientId, clientSecret, redirectUrl)
-	} else if typ == "Custom" {
-		return NewCustomIdProvider(clientId, clientSecret, redirectUrl, authUrl, tokenUrl, userInfoUrl)
-	} else if typ == "Infoflow" {
-		if subType == "Internal" {
-			return NewInfoflowInternalIdProvider(clientId, clientSecret, appId, redirectUrl)
-		} else if subType == "Third-party" {
-			return NewInfoflowIdProvider(clientId, clientSecret, appId, redirectUrl)
-		} else {
-			return nil
-		}
-	} else if typ == "Casdoor" {
-		return NewCasdoorIdProvider(clientId, clientSecret, redirectUrl, hostUrl)
-	} else if typ == "Okta" {
-		return NewOktaIdProvider(clientId, clientSecret, redirectUrl, hostUrl)
-	} else if typ == "Douyin" {
-		return NewDouyinIdProvider(clientId, clientSecret, redirectUrl)
-	} else if isGothSupport(typ) {
-		return NewGothIdProvider(typ, clientId, clientSecret, redirectUrl)
-	} else if typ == "Bilibili" {
-		return NewBilibiliIdProvider(clientId, clientSecret, redirectUrl)
+	if len(subType) > 0 {
+		typ = typ + "-" + subType
+	}
+	provider, ok := idProviders[typ]
+	if !ok {
+		return nil
 	}
 
-	return nil
+	opts := make(map[string]string)
+	opts["hostUrl"] = hostUrl
+	opts["authUrl"] = authUrl
+	opts["tokenUrl"] = tokenUrl
+	opts["userInfoUrl"] = userInfoUrl
+	opts["appId"] = appId
+
+	return provider.New(clientId, clientSecret, redirectUrl, opts)
 }
 
 var gothList = []string{"Apple", "AzureAd", "Slack", "Steam"}

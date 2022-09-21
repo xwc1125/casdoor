@@ -23,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -38,6 +39,15 @@ func NewLinkedInIdProvider(clientId string, clientSecret string, redirectUrl str
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *LinkedInIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &LinkedInIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
 }
 
 func (idp *LinkedInIdProvider) SetHttpClient(client *http.Client) {
@@ -70,7 +80,7 @@ type LinkedInAccessToken struct {
 // get more detail via: https://docs.microsoft.com/en-us/linkedIn/shared/authentication/authorization-code-flow?context=linkedIn%2Fcontext&tabs=HTTPS
 func (idp *LinkedInIdProvider) GetToken(code string) (*oauth2.Token, error) {
 	params := url.Values{}
-	params.Add("grant_type", "authorization_code")
+	params.Add("grant_type", gparam.GrantType_AuthorizationCode.String())
 	params.Add("redirect_uri", idp.Config.RedirectURL)
 	params.Add("client_id", idp.Config.ClientID)
 	params.Add("client_secret", idp.Config.ClientSecret)

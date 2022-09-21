@@ -30,6 +30,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"golang.org/x/oauth2"
 )
 
@@ -46,6 +47,15 @@ func NewAlipayIdProvider(clientId string, clientSecret string, redirectUrl strin
 	idp.Config = config
 
 	return idp
+}
+
+func (idp *AlipayIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &AlipayIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
 }
 
 // SetHttpClient ...
@@ -96,7 +106,7 @@ func (idp *AlipayIdProvider) GetToken(code string) (*oauth2.Token, error) {
 		SignType  string `json:"sign_type"`
 		TimeStamp string `json:"timestamp"`
 		Version   string `json:"version"`
-	}{idp.Config.ClientID, "utf-8", code, "authorization_code", "alipay.system.oauth.token", "RSA2", time.Now().Format("2006-01-02 15:04:05"), "1.0"}
+	}{idp.Config.ClientID, "utf-8", code, gparam.GrantType_AuthorizationCode.String(), "alipay.system.oauth.token", "RSA2", time.Now().Format("2006-01-02 15:04:05"), "1.0"}
 
 	data, err := idp.postWithBody(pTokenParams, idp.Config.Endpoint.TokenURL)
 	if err != nil {

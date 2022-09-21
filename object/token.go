@@ -21,6 +21,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/casdoor/casdoor/gparam"
 	"github.com/casdoor/casdoor/idp"
 	"github.com/casdoor/casdoor/util"
 	"xorm.io/core"
@@ -64,11 +65,11 @@ type Token struct {
 
 type TokenWrapper struct {
 	AccessToken  string `json:"access_token"`
-	IdToken      string `json:"id_token"`
-	RefreshToken string `json:"refresh_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int    `json:"expires_in"`
-	Scope        string `json:"scope"`
+	IdToken      string `json:"id_token,omitempty"`
+	RefreshToken string `json:"refresh_token,omitempty"`
+	TokenType    string `json:"token_type,omitempty"`
+	ExpiresIn    int    `json:"expires_in,omitempty"`
+	Scope        string `json:"scope,omitempty"`
 }
 
 type TokenError struct {
@@ -238,6 +239,7 @@ func GetTokenByTokenAndApplication(token string, application string) *Token {
 	return &tokenResult
 }
 
+// CheckOAuthLogin 校验oauth登录
 func CheckOAuthLogin(clientId string, responseType string, redirectUri string, scope string, state string) (string, *Application) {
 	if responseType != "code" && responseType != "token" && responseType != "id_token" {
 		return fmt.Sprintf("error: grant_type: %s is not supported in this application", responseType), nil
@@ -322,7 +324,7 @@ func GetOAuthCode(userId string, clientId string, responseType string, redirectU
 	}
 }
 
-func GetOAuthToken(grantType string, clientId string, clientSecret string, code string, verifier string, scope string, username string, password string, host string, tag string, avatar string) interface{} {
+func GetOAuthToken(grantType gparam.GrantType, clientId string, clientSecret string, code string, verifier string, scope string, username string, password string, host string, tag string, avatar string) interface{} {
 	application := GetApplicationByClientId(clientId)
 	if application == nil {
 		return &TokenError{
@@ -343,11 +345,11 @@ func GetOAuthToken(grantType string, clientId string, clientSecret string, code 
 	var token *Token
 	var tokenError *TokenError
 	switch grantType {
-	case "authorization_code": // Authorization Code Grant
+	case gparam.GrantType_AuthorizationCode: // Authorization Code Grant
 		token, tokenError = GetAuthorizationCodeToken(application, clientSecret, code, verifier)
-	case "password": //	Resource Owner Password Credentials Grant
+	case gparam.GrantType_Password: //	Resource Owner Password Credentials Grant
 		token, tokenError = GetPasswordToken(application, username, password, scope, host)
-	case "client_credentials": // Client Credentials Grant
+	case gparam.GrantType_ClientCredentials: // Client Credentials Grant
 		token, tokenError = GetClientCredentialsToken(application, clientSecret, scope, host)
 	}
 
@@ -364,19 +366,21 @@ func GetOAuthToken(grantType string, clientId string, clientSecret string, code 
 	updateUsedByCode(token)
 	tokenWrapper := &TokenWrapper{
 		AccessToken:  token.AccessToken,
-		IdToken:      token.AccessToken,
 		RefreshToken: token.RefreshToken,
 		TokenType:    token.TokenType,
 		ExpiresIn:    token.ExpiresIn,
 		Scope:        token.Scope,
 	}
+	if !application.NoReturnIdToken {
+		tokenWrapper.IdToken = token.AccessToken
+	}
 
 	return tokenWrapper
 }
 
-func RefreshToken(grantType string, refreshToken string, scope string, clientId string, clientSecret string, host string) interface{} {
+func RefreshToken(grantType gparam.GrantType, refreshToken string, scope string, clientId string, clientSecret string, host string) interface{} {
 	// check parameters
-	if grantType != "refresh_token" {
+	if grantType != gparam.GrantType_RefreshToken {
 		return &TokenError{
 			Error:            UnsupportedGrantType,
 			ErrorDescription: "grant_type should be refresh_token",
@@ -450,11 +454,13 @@ func RefreshToken(grantType string, refreshToken string, scope string, clientId 
 
 	tokenWrapper := &TokenWrapper{
 		AccessToken:  newToken.AccessToken,
-		IdToken:      newToken.AccessToken,
 		RefreshToken: newToken.RefreshToken,
 		TokenType:    newToken.TokenType,
 		ExpiresIn:    newToken.ExpiresIn,
 		Scope:        newToken.Scope,
+	}
+	if !application.NoReturnIdToken {
+		tokenWrapper.IdToken = newToken.AccessToken
 	}
 
 	return tokenWrapper
@@ -470,12 +476,12 @@ func pkceChallenge(verifier string) string {
 // IsGrantTypeValid
 // Check if grantType is allowed in the current application
 // authorization_code is allowed by default
-func IsGrantTypeValid(method string, grantTypes []string) bool {
-	if method == "authorization_code" {
+func IsGrantTypeValid(method gparam.GrantType, grantTypes []string) bool {
+	if method == gparam.GrantType_AuthorizationCode {
 		return true
 	}
 	for _, m := range grantTypes {
-		if m == method {
+		if m == method.String() {
 			return true
 		}
 	}

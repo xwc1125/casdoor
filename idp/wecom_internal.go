@@ -40,6 +40,15 @@ func NewWeComInternalIdProvider(clientId string, clientSecret string, redirectUr
 	return idp
 }
 
+func (idp *WeComInternalIdProvider) New(clientId string, clientSecret string, redirectUrl string, opts map[string]string) IdProvider {
+	idp1 := &WeComInternalIdProvider{}
+
+	config := idp1.getConfig(clientId, clientSecret, redirectUrl)
+	idp1.Config = config
+
+	return idp1
+}
+
 func (idp *WeComInternalIdProvider) SetHttpClient(client *http.Client) {
 	idp.Client = client
 }
